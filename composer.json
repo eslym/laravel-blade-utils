@@ -1,0 +1,32 @@
+{
+    "name": "eslym/laravel-blade-utils",
+    "description": "Some fix and utilities for blade",
+    "version": "1.0.0",
+    "type": "library",
+    "require": {
+        "php": ">= 7.1",
+        "laravel/framework": ">=5.0.0 <6.0.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "eslym",
+            "email": "engshun.lim@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Eslym\\BladeUtils\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel":{
+            "providers": [
+                "Eslym\\BladeUtils\\Providers\\BladeUtilServiceProvider"
+            ],
+            "aliases": {
+                "BladeUtils": "Eslym\\BladeUtils\\Facades\\BladeUtils"
+            }
+        }
+    }
+}
