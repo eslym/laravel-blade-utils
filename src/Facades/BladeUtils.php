@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Facade;
  * @package Eslym\BladeUtils\Facades
  *
  * @method static Arguments parseArguments(string $expression)
+ * @method static string compileJson($expression)
+ * @method static string compileCss($expression)
+ * @method static string compileJs($expression)
+ * @method static string compileImg($expression)
  * @method static string buildPropMeta(array $meta)
  * @method static string buildNameMeta(array $meta)
  * @method static string buildItemMeta(array $meta)

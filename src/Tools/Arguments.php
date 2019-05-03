@@ -7,8 +7,10 @@ namespace Eslym\BladeUtils\Tools;
 use ArrayAccess;
 use Countable;
 use Exception;
+use IteratorAggregate;
+use Traversable;
 
-class Arguments implements ArrayAccess, Countable
+class Arguments implements ArrayAccess, Countable, IteratorAggregate
 {
     const TYPE_CONSTANT = 1;
     const TYPE_DYNAMIC = 2;
@@ -23,50 +25,98 @@ class Arguments implements ArrayAccess, Countable
         T_DOLLAR_OPEN_CURLY_BRACES => "}",
     ];
 
-    private $p_stack = [];
-
     /**
      * @var Argument[]
      */
     private $arguments = [];
 
-    public function __construct($expression)
+    public function __construct($expression, $tokens = null)
     {
-        $tokens = token_get_all('<?php '.$expression);
+        if($tokens == null){
+            $tokens = token_get_all('<?php '.$expression);
+        }
+        $p_stack = [];
         $arguments = [[]];
         array_shift($tokens);
         while($token = array_shift($tokens)){
             if(is_string($token)){
-                if($token == ',' && empty($this->p_stack)){
-                    $last = end($arguments[0]);
-                    if(is_array($last) && $last[0] == T_WHITESPACE){
-                        array_pop($arguments[0]);
-                    }
+                if($token == ',' && empty($p_stack)){
                     array_unshift($arguments, []);
                     continue;
                 }
                 $arguments[0][]=$token;
-                $last = end($this->p_stack);
+                $last = end($p_stack);
                 if(isset(self::TOKEN_CLOSE_MAP[$last]) && self::TOKEN_CLOSE_MAP[$last] == $token){
-                    array_pop($this->p_stack);
+                    array_pop($p_stack);
                 } else if(isset(self::TOKEN_CLOSE_MAP[$token])){
-                    $this->p_stack[]= $token;
+                    $p_stack[]= $token;
                 }
             } else {
-                if(empty($arguments[0]) && $token[0] == T_WHITESPACE){
-                    continue;
-                }
                 $arguments[0][]=$token;
                 if(isset(self::TOKEN_CLOSE_MAP[$token[0]])){
-                    $this->p_stack[]= $token[0];
+                    $p_stack[]= $token[0];
                 }
             }
         }
         $this->arguments = array_reverse(array_map(function($tokens){
-            return new Argument($tokens);
+            return new Argument($this->trim($tokens));
         }, $arguments));
     }
 
+    private function trim($tokens){
+        do{
+            $trim = false;
+            if(is_array($tokens[0]) && $tokens[0][0] == T_WHITESPACE){
+                $trim = true;
+                array_shift($tokens);
+            }
+            if(is_array(end($tokens)) && end($tokens)[0] == T_WHITESPACE){
+                $trim = true;
+                array_pop($tokens);
+            }
+            if($tokens[0] == '(' && ($end = array_pop($tokens)) == ')'){
+                $p_stack = ['('];
+                $parentheses = true;
+                foreach($tokens as $token){
+                    if(is_string($token)){
+                        $last = end($p_stack);
+                        if(isset(self::TOKEN_CLOSE_MAP[$last]) && self::TOKEN_CLOSE_MAP[$last] == $token){
+                            array_pop($p_stack);
+                            if(empty($p_stack)){
+                                $parentheses = false;
+                                break;
+                            }
+                        } else if(isset(self::TOKEN_CLOSE_MAP[$token])){
+                            $p_stack[]= $token;
+                        }
+                    } else {
+                        if(isset(self::TOKEN_CLOSE_MAP[$token[0]])){
+                            $p_stack[]= $token[0];
+                        }
+                    }
+                }
+                if($parentheses){
+                    array_shift($tokens);
+                    $trim = true;
+                } else {
+                    $tokens []= $end;
+                }
+            } else if(isset($end) && !$trim) {
+                $tokens []= $end;
+            }
+            unset($end);
+        }while($trim);
+        return $tokens;
+    }
+
+    public function isAllSimple(){
+        foreach ($this->arguments as $arg){
+            if(!$arg->isSimple()){
+                return false;
+            }
+        }
+        return true;
+    }
 
     public function toArray(){
         return array_map(function(Argument $arg){
@@ -150,5 +200,19 @@ class Arguments implements ArrayAccess, Countable
     public function count()
     {
         return count($this->arguments);
+    }
+
+    /**
+     * Retrieve an external iterator
+     * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
+     * @return Traversable An instance of an object implementing <b>Iterator</b> or
+     * <b>Traversable</b>
+     * @since 5.0.0
+     */
+    public function getIterator()
+    {
+        for ($i = 0; $i < $this->count(); $i ++){
+            yield $this->offsetGet($i);
+        }
     }
 }

@@ -35,6 +35,10 @@ class Argument
         return false;
     }
 
+    public function tokens(){
+        return $this->tokens;
+    }
+
     public function val(){
         if($this->isSimple()){
             return eval('return ('.$this->toString().');');
