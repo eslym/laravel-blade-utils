@@ -96,7 +96,7 @@ class BladeUtils
             }
             $script .= " crossorigin=\"$attr\"";
         }
-        return $script.'</script>';
+        return $script.'></script>';
     }
 
     public function compileImg($expression) {
