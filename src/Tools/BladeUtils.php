@@ -10,7 +10,20 @@ class BladeUtils
     }
 
     public function compileJson($expression): string{
-        $args = $this->parseArguments($expression)->toArray();
+        $args = $this->parseArguments($expression);
+        if($args->isAllSimple()){
+            $args = array_map(function (Argument $arg){
+                return $arg->val();
+            }, iterator_to_array($args));
+            if(count($args) < 2){
+                $args[]= 15;
+            }
+            if(count($args) < 3){
+                $args[]= 512;
+            }
+            return json_encode(...$args);
+        }
+        $args = $args->toArray();
         if(count($args) < 2){
             $args[]= '15';
         }
@@ -113,27 +126,33 @@ class BladeUtils
         return $script.'/>';
     }
 
-    public function buildPropMeta(array $meta): string{
+    /**
+     * @param string|array $attrs
+     * @param array $meta
+     * @return string
+     */
+    public function buildMeta($attrs, array $meta): string{
+        if(is_string($attrs)){
+            $attrs = [$attrs];
+        }
         $result = '';
-        foreach ($meta as $key => $value){
-            $result.= '<meta property="'.e($key).'" content="'.e($value).'" >';
+        foreach ($attrs as $attr){
+            foreach ($meta as $key => $value){
+                $result.= '<meta '.$attr.'="'.e($key).'" content="'.e($value).'" >';
+            }
         }
         return $result;
+    }
+
+    public function buildPropMeta(array $meta): string{
+        return $this->buildMeta('property', $meta);
     }
 
     public function buildNameMeta(array $meta): string{
-        $result = '';
-        foreach ($meta as $key => $value){
-            $result.= '<meta name="'.e($key).'" content="'.e($value).'" >';
-        }
-        return $result;
+        return $this->buildMeta('name', $meta);
     }
 
     public function buildItemMeta(array $meta): string{
-        $result = '';
-        foreach ($meta as $key => $value){
-            $result.= '<meta itemprop="'.e($key).'" content="'.e($value).'" >';
-        }
-        return $result;
+        return $this->buildMeta('itemprop', $meta);
     }
 }

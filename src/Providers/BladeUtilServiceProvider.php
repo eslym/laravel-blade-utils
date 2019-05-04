@@ -41,13 +41,17 @@ class BladeUtilServiceProvider extends ServiceProvider
             return '<?php echo $__env->renderEachWithVars(get_defined_vars(), '.$expression.') ?>';
         });
 
-        Blade::directive('json', BladeUtils::class.'::compileIif');
+        Blade::directive('json', BladeUtils::class.'::compileJson');
 
         Blade::directive('css', BladeUtils::class.'::compileCss');
 
         Blade::directive('js', BladeUtils::class.'::compileJs');
 
         Blade::directive('img', BladeUtils::class.'::compileImg');
+
+        Blade::directive('meta', function ($expression){
+            return "<?php echo \\".BladeUtils::class."::buildMeta($expression); ?>";
+        });
 
         Blade::directive('nameMeta', function ($expression){
             return "<?php echo \\".BladeUtils::class."::buildNameMeta($expression); ?>";
