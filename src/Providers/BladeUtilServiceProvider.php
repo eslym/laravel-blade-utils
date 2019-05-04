@@ -49,6 +49,8 @@ class BladeUtilServiceProvider extends ServiceProvider
 
         Blade::directive('img', BladeUtils::class.'::compileImg');
 
+        Blade::directive('iif', BladeUtils::class.'::compileIif');
+
         Blade::directive('meta', function ($expression){
             return "<?php echo \\".BladeUtils::class."::buildMeta($expression); ?>";
         });
