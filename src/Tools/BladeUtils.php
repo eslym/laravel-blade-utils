@@ -79,7 +79,7 @@ class BladeUtils
         } else {
             $src = "<?php echo e($args[0]); ?>";
         }
-        $script = "<script type=\"text/javascript\" language=\"js\" src=\"$src\"";
+        $script = "<script type=\"text/javascript\" lang=\"js\" src=\"$src\"";
         if($args->count() > 1){
             if($args[1]->isSimple()){
                 $attr = e($args[1]->val());
