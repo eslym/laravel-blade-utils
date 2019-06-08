@@ -1,7 +1,6 @@
 {
     "name": "eslym/laravel-blade-utils",
     "description": "Some fix and utilities for blade",
-    "version": "1.0.3",
     "type": "library",
     "require": {
         "php": ">= 7.1",
