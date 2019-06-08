@@ -26,3 +26,11 @@ This fix made ```@json``` directive supports more complex syntax.
 
 #### Better ```@each``` directive
 ```@each``` directive will now include with variables in current scope.
+
+#### ```@js``` and ```@css``` directives
+Syntax:
+
+````blade
+@js($uri, [$sri], [$crossorigin])
+@css($uri, [$sri], [$crossorigin])
+````
