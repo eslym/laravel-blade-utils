@@ -51,20 +51,18 @@ class BladeUtilServiceProvider extends ServiceProvider
 
         Blade::directive('iif', BladeUtils::class.'::compileIif');
 
-        Blade::directive('meta', function ($expression){
-            return "<?php echo \\".BladeUtils::class."::buildMeta($expression); ?>";
-        });
+        Blade::directive('meta', BladeUtils::class.'::compileMeta');
 
         Blade::directive('nameMeta', function ($expression){
-            return "<?php echo \\".BladeUtils::class."::buildNameMeta($expression); ?>";
+            return BladeUtils::compileMeta('"name",'.$expression);
         });
 
         Blade::directive('propMeta', function ($expression){
-            return "<?php echo \\".BladeUtils::class."::buildPropMeta($expression); ?>";
+            return BladeUtils::compileMeta('"property",'.$expression);
         });
 
         Blade::directive('itemMeta', function ($expression){
-            return "<?php echo \\".BladeUtils::class."::buildItemMeta($expression); ?>";
+            return BladeUtils::compileMeta('"itemprop",'.$expression);
         });
     }
 }

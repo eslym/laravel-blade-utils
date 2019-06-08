@@ -34,10 +34,10 @@ class Arguments implements ArrayAccess, Countable, IteratorAggregate
     {
         if($tokens == null){
             $tokens = token_get_all('<?php '.$expression);
+            array_shift($tokens);
         }
         $p_stack = [];
         $arguments = [[]];
-        array_shift($tokens);
         while($token = array_shift($tokens)){
             if(is_string($token)){
                 if($token == ',' && empty($p_stack)){
@@ -122,6 +122,11 @@ class Arguments implements ArrayAccess, Countable, IteratorAggregate
         return array_map(function(Argument $arg){
             return $arg->toString();
         }, $this->arguments);
+    }
+
+    public function __toString()
+    {
+        return join(',', $this->toArray());
     }
 
     /**

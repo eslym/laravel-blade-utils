@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static string compileCss($expression)
  * @method static string compileJs($expression)
  * @method static string compileImg($expression)
+ * @method static string compileMeta($expression)
  * @method static string buildMeta(string|array $attrs, array $meta)
  * @method static string buildPropMeta(array $meta)
  * @method static string buildNameMeta(array $meta)

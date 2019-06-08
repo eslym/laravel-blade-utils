@@ -4,6 +4,9 @@
 namespace Eslym\BladeUtils\Tools;
 
 
+use Generator;
+use Illuminate\Support\Arr;
+
 class Argument
 {
     private $tokens;
@@ -33,6 +36,47 @@ class Argument
             return true;
         }
         return false;
+    }
+
+    public function isArray(): bool{
+        $first = Arr::first($this->tokens);
+        $seconds = count($this->tokens) > 1 ? $this->tokens[1] : null;
+        $last = Arr::last($this->tokens);
+        return ($first == '[' && $last == ']') ||
+            (is_array($first) && $first[0] == T_ARRAY && $seconds == '(' && $last == ')');
+    }
+
+    /**
+     * @return Argument[]|Generator
+     */
+    public function loopArray(){
+        if(!$this->isArray()){
+            return new Generator();
+        }
+        $tokens = (array)((object)$this->tokens);
+        array_pop($tokens);
+        $t = array_shift($tokens);
+        if($t !== '['){
+            array_shift($tokens);
+        }
+        $args = new Arguments(null, $tokens);
+        foreach ($args as $arg){
+            $tokens = (array)((object)$arg->tokens);
+            $split = -1;
+            foreach ($tokens as $i => $token){
+                if(is_array($token) && $token[0] == T_DOUBLE_ARROW){
+                    $split = $i;
+                    break;
+                }
+            }
+            if($split >= 0){
+                $key = array_splice($tokens, 0, $split);
+                array_shift($tokens);
+                yield (new Arguments(null, $key))[0] => (new Arguments(null, $tokens))[0];
+            } else {
+                yield new Argument($arg->tokens);
+            }
+        }
     }
 
     public function tokens(){

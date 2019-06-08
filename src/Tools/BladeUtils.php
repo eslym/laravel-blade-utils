@@ -126,6 +126,40 @@ class BladeUtils
         return $script.'/>';
     }
 
+    public function compileMeta($expression): string{
+        $args = $this->parseArguments($expression);
+        if(!(($args[0]->isArray() || $args[0]->isSimple()) && $args[1]->isArray())){
+            return "<?php echo \\". \Eslym\BladeUtils\Facades\BladeUtils::class."::buildMeta($args); ?>";
+        }
+        $attrs = [];
+        if($args[0]->isSimple()){
+            $attrs []= e($args[0]->val());
+        } else {
+            foreach ($args[0]->loopArray() as $value){
+                $attrs []=  $value->isSimple() ?
+                    e($value->val()) :
+                    "<?php echo e($value); ?>";
+            }
+        }
+        $result = '';
+        foreach ($attrs as $attr){
+            foreach ($args[1]->loopArray() as $key => $value){
+                if($key instanceof Argument){
+                    $key = $key->isSimple() ?
+                        e($key->val()) :
+                        "<?php echo e($key); ?>";
+                } else {
+                    $key = e($key);
+                }
+                $value = $value->isSimple() ?
+                    e($value->val()) :
+                    "<?php echo e($value); ?>";
+                $result.= '<meta '.$attr.'="'.$key.'" content="'.$value.'">';
+            }
+        }
+        return $result;
+    }
+
     /**
      * @param string|array $attrs
      * @param array $meta
@@ -138,7 +172,7 @@ class BladeUtils
         $result = '';
         foreach ($attrs as $attr){
             foreach ($meta as $key => $value){
-                $result.= '<meta '.$attr.'="'.e($key).'" content="'.e($value).'" >';
+                $result.= '<meta '.$attr.'="'.e($key).'" content="'.e($value).'">';
             }
         }
         return $result;
