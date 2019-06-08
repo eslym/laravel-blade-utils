@@ -20,7 +20,7 @@ $app->register(Eslym\BladeUtils\Providers\BladeUtilServiceProvider::class);
 
 ### Features
 #### Fix for ```@json``` directive
-This fix made json directive supports more complex syntax.
+This fix made ```@json``` directive supports more complex syntax.
 
 ```@json([$val1, $val2, $val3, $val4])``` will be compiled to ```<?php echo json_encode([$val1, $val2, $val3, $val4], 15, 512); ?>``` instead of ```<?php echo json_encode([$val1, $val2, $val3); ?>``` by original blade directive.
 
