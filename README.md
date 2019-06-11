@@ -39,13 +39,13 @@ If you are using phpstorm, please enable custom blade settings and add these ent
 ````xml
 <directives>
     ...
-    <data directive="@js" injection="true" prefix="&lt;?php __ide_blade_helper::js(" suffix="); ?>"/>
-    <data directive="@css" injection="true" prefix="&lt;?php __ide_blade_helper::css(" suffix="); ?>"/>
-    <data directive="@img" injection="true" prefix="&lt;?php __ide_blade_helper::img(" suffix="); ?>"/>
-    <data directive="@iif" injection="true" prefix="&lt;?php __ide_blade_helper::iif(" suffix="); ?>"/>
-    <data directive="@meta" injection="true" prefix="&lt;?php __ide_blade_helper::meta(" suffix="); ?>"/>
-    <data directive="@nameMeta" injection="true" prefix="&lt;?php __ide_blade_helper::nameMeta(" suffix="); ?>"/>
-    <data directive="@propMeta" injection="true" prefix="&lt;?php __ide_blade_helper::propMeta(" suffix="); ?>"/>
-    <data directive="@itemMeta" injection="true" prefix="&lt;?php __ide_blade_helper::itemMeta(" suffix="); ?>"/> 
+    <data directive="@js" injection="true" prefix="&lt;?php __ide_blade_helper::js(" suffix="); ?&gt;"/>
+    <data directive="@css" injection="true" prefix="&lt;?php __ide_blade_helper::css(" suffix="); ?&gt;"/>
+    <data directive="@img" injection="true" prefix="&lt;?php __ide_blade_helper::img(" suffix="); ?&gt;"/>
+    <data directive="@iif" injection="true" prefix="&lt;?php __ide_blade_helper::iif(" suffix="); ?&gt;"/>
+    <data directive="@meta" injection="true" prefix="&lt;?php __ide_blade_helper::meta(" suffix="); ?&gt;"/>
+    <data directive="@nameMeta" injection="true" prefix="&lt;?php __ide_blade_helper::nameMeta(" suffix="); ?&gt;"/>
+    <data directive="@propMeta" injection="true" prefix="&lt;?php __ide_blade_helper::propMeta(" suffix="); ?&gt;"/>
+    <data directive="@itemMeta" injection="true" prefix="&lt;?php __ide_blade_helper::itemMeta(" suffix="); ?&gt;"/> 
 </directives>
 ````
