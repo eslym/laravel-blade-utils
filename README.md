@@ -29,8 +29,23 @@ This fix made ```@json``` directive supports more complex syntax.
 
 #### ```@js``` and ```@css``` directives
 Syntax:
-
 ````blade
 @js($uri, [$sri], [$crossorigin])
 @css($uri, [$sri], [$crossorigin])
+````
+
+### PhpStorm
+If you are using phpstorm, please enable custom blade settings and add these entries into ```.idea/blade.xml``` for type hint.
+````xml
+<directives>
+    ...
+    <data directive="@js" injection="true" prefix="&lt;?php __ide_blade_helper::js(" suffix="); ?>"/>
+    <data directive="@css" injection="true" prefix="&lt;?php __ide_blade_helper::css(" suffix="); ?>"/>
+    <data directive="@img" injection="true" prefix="&lt;?php __ide_blade_helper::img(" suffix="); ?>"/>
+    <data directive="@iif" injection="true" prefix="&lt;?php __ide_blade_helper::iif(" suffix="); ?>"/>
+    <data directive="@meta" injection="true" prefix="&lt;?php __ide_blade_helper::meta(" suffix="); ?>"/>
+    <data directive="@nameMeta" injection="true" prefix="&lt;?php __ide_blade_helper::nameMeta(" suffix="); ?>"/>
+    <data directive="@propMeta" injection="true" prefix="&lt;?php __ide_blade_helper::propMeta(" suffix="); ?>"/>
+    <data directive="@itemMeta" injection="true" prefix="&lt;?php __ide_blade_helper::itemMeta(" suffix="); ?>"/> 
+</directives>
 ````
