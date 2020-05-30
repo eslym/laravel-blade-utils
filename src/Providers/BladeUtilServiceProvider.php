@@ -5,8 +5,8 @@ namespace Eslym\BladeUtils\Providers;
 use Eslym\BladeUtils\Facades\BladeUtils;
 use Eslym\BladeUtils\Tools\BladeUtils as BladeUtilsImpl;
 use Illuminate\Support\Str;
+use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\Factory;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class BladeUtilServiceProvider extends ServiceProvider
@@ -17,52 +17,56 @@ class BladeUtilServiceProvider extends ServiceProvider
         });
         $this->app->alias(BladeUtilsImpl::class, 'blade-utils');
 
-        Factory::macro('renderEachWithVars', function($vars, $view, $data, $iterator, $empty = 'raw|'){
-            /** @var $self Factory */
-            $self = $this;
-            $result = '';
-            if (count($data) > 0) {
-                foreach ($data as $key => $value) {
-                    $result .= $self->make(
-                        $view, $vars, ['key' => $key, $iterator => $value]
-                    )->render();
+        $this->app->afterResolving('view', function (Factory $factory){
+            $factory->macro('renderEachWithVars', function($vars, $view, $data, $iterator, $empty = 'raw|'){
+                /** @var $self Factory */
+                $self = $this;
+                $result = '';
+                if (count($data) > 0) {
+                    foreach ($data as $key => $value) {
+                        $result .= $self->make(
+                            $view, $vars, ['key' => $key, $iterator => $value]
+                        )->render();
+                    }
+                } else {
+                    $result = Str::startsWith($empty, 'raw|')
+                        ? substr($empty, 4)
+                        : $self->make($empty, $vars)->render();
                 }
-            } else {
-                $result = Str::startsWith($empty, 'raw|')
-                    ? substr($empty, 4)
-                    : $self->make($empty, $vars)->render();
-            }
-            return $result;
+                return $result;
+            });
         });
 
-        Blade::directive('json', BladeUtils::class.'::compileJson');
+        $this->app->afterResolving('blade.compiler', function(BladeCompiler $compiler){
+            $compiler->directive('json', BladeUtils::class.'::compileJson');
 
-        Blade::directive('each', function ($expression){
-            return '<?php echo $__env->renderEachWithVars(get_defined_vars(), '.$expression.') ?>';
-        });
+            $compiler->directive('each', function ($expression){
+                return '<?php echo $__env->renderEachWithVars(get_defined_vars(), '.$expression.') ?>';
+            });
 
-        Blade::directive('json', BladeUtils::class.'::compileJson');
+            $compiler->directive('json', BladeUtils::class.'::compileJson');
 
-        Blade::directive('css', BladeUtils::class.'::compileCss');
+            $compiler->directive('css', BladeUtils::class.'::compileCss');
 
-        Blade::directive('js', BladeUtils::class.'::compileJs');
+            $compiler->directive('js', BladeUtils::class.'::compileJs');
 
-        Blade::directive('img', BladeUtils::class.'::compileImg');
+            $compiler->directive('img', BladeUtils::class.'::compileImg');
 
-        Blade::directive('iif', BladeUtils::class.'::compileIif');
+            $compiler->directive('iif', BladeUtils::class.'::compileIif');
 
-        Blade::directive('meta', BladeUtils::class.'::compileMeta');
+            $compiler->directive('meta', BladeUtils::class.'::compileMeta');
 
-        Blade::directive('nameMeta', function ($expression){
-            return BladeUtils::compileMeta('"name",'.$expression);
-        });
+            $compiler->directive('nameMeta', function ($expression){
+                return BladeUtils::compileMeta('"name",'.$expression);
+            });
 
-        Blade::directive('propMeta', function ($expression){
-            return BladeUtils::compileMeta('"property",'.$expression);
-        });
+            $compiler->directive('propMeta', function ($expression){
+                return BladeUtils::compileMeta('"property",'.$expression);
+            });
 
-        Blade::directive('itemMeta', function ($expression){
-            return BladeUtils::compileMeta('"itemprop",'.$expression);
+            $compiler->directive('itemMeta', function ($expression){
+                return BladeUtils::compileMeta('"itemprop",'.$expression);
+            });
         });
     }
 }
